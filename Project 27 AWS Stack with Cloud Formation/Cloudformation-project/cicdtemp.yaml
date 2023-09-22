@@ -1,0 +1,61 @@
+Parameters:
+  Keypair:
+    Description: cicd-stack-Key
+    Type: "AWS::EC2::KeyPair::KeyName"
+  MyIp:
+    Description: Assigning IP 
+    Type: String 
+    Default: 102.67.21.239/32
+Resources:
+  S3RoleforCiCd:
+    Type: AWS::CloudFormation::Stack 
+    Properties: 
+      TemplateURL: https://s3.amazonaws.com/vprofile-cicd-templates25/stack-template/cicds3role.yaml
+  JenkinsInst: 
+    Type: AWS::CloudFormation::Stack
+    DependsOn: S3RoleforCiCd 
+    Properties: 
+      TemplateURL: https://s3.amazonaws.com/vprofile-cicd-templates25/stack-template/jenk.yaml
+      Parameters: 
+        Keypair: !Ref Keypair
+        MyIP: !Ref MyIp
+  App01qa: 
+    Type: AWS::CloudFormation::Stack
+    DependsOn: JenkinsInst
+    Properties: 
+      TemplateURL: https://s3.amazonaws.com/vprofile-cicd-templates25/stack-template/app01qa.yaml
+      Parameters: 
+        Keypair: !Ref Keypair 
+        MyIP: !Ref MyIp
+  NexusServer: 
+    Type: AWS::CloudFormation::Stack
+    DependsOn: JenkinsInst
+    Properties: 
+      TemplateURL: https://s3.amazonaws.com/vprofile-cicd-templates25/stack-template/nexus.yaml
+      Parameters: 
+        Keypair: !Ref Keypair 
+        MyIP: !Ref MyIp
+  SonarServer: 
+    Type: AWS::CloudFormation::Stack
+    DependsOn: JenkinsInst
+    Properties: 
+      TemplateURL: https://s3.amazonaws.com/vprofile-cicd-templates25/stack-template/sonar.yaml
+      Parameters: 
+        Keypair: !Ref Keypair 
+        MyIP: !Ref MyIp
+  db01qa: 
+    Type: AWS::CloudFormation::Stack
+    DependsOn: JenkinsInst
+    Properties: 
+      TemplateURL: https://s3.amazonaws.com/vprofile-cicd-templates25/stack-template/db01qa.yaml
+      Parameters: 
+        Keypair: !Ref Keypair 
+        MyIP: !Ref MyIp
+  WintestServer:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: JenkinsInst
+    Properties: 
+      TemplateURL: https://s3.amazonaws.com/vprofile-cicd-templates25/stack-template/wintest.yaml
+      Parameters: 
+        Keypair: !Ref Keypair 
+        MyIP: !Ref MyIp
